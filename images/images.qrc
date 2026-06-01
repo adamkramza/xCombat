@@ -1,0 +1,19 @@
+<RCC>
+    <qresource prefix="/gracz">
+        <file>dementor.png</file>
+        <file>JET.png</file>
+        <file>Pauza.png</file>
+        <file>Menu.png</file>
+        <file>Rakieta.png</file>
+        <file>UFO1.png</file>
+        <file>UFO2.png</file>
+        <file>Bomba.png</file>
+        <file>boom.gif</file>
+        <file>wybuch.png</file>
+        <file>GameOverxCombat.png</file>
+        <file>Przeciwnikhelikopter1.png</file>
+        <file>Czolg.png</file>
+        <file>Przeciwniksamolot1.png</file>
+        <file>1.Pustynia.png</file>
+    </qresource>
+</RCC>
