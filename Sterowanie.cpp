@@ -93,6 +93,7 @@ void Sterowanie::stworzPrzeciwnika()
         nP = new Przeciwnik(this);
     }
 
+
     //POziom 2:
     else if (aktualnyLevel == 2)
     {
@@ -237,6 +238,7 @@ void Sterowanie::usunPrzeciwnika(Przeciwnik* przeciwnik)
     }
 }
 
+
 void Sterowanie::sprawdzKolizje()
 {
     // PĘTLA 1: POCISKI I PRZECIWNICY
@@ -292,7 +294,8 @@ void Sterowanie::sprawdzKolizje()
             pr->ustawWybuch();
             pr->licznikWybuchu = 1;
 
-            if (m_zycie <= 0) {
+            if (m_zycie <= 0)
+            {
                 time.stop();
                 sPrzeciwnik.stop();
                 m_gameOver = true;
@@ -302,7 +305,7 @@ void Sterowanie::sprawdzKolizje()
         }
     }
 
-    int nowyPoziom = 1;
+  int nowyPoziom = 1;
 
     if(m_punkty >= 1000)
     {
