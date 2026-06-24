@@ -2,56 +2,38 @@
 #include <QDebug>
 using namespace std;
 
+//To jest przeciwnik UFO - na 4 levelu
 PrzeciwnikDolny::PrzeciwnikDolny(QObject* parent) : Przeciwnik(parent)
 {
 
-    m_typ = 3; // typ obiektu - dolny
-    m_rozmiar=120; // romiar obiektu - dolny
-    zatrzymany=false;
-    licznikStop=0;
-    m_x = 2000; //pozycja obiektu OX
-
-    // DÓŁ EKRANU
-    m_y = 200+rand()%700; //pozycja obiektu OY
-
-    //Prędkość poruszania przeciwnika
+    m_typ = 1;
+    m_rozmiar=140;
+    m_x = 1940;
+    m_y = 100 + (rand() % 500);
     xPredkosc = 4;
-
+    // rozłączamy i łączymy timer pod naszą klasę
     disconnect(&eTime, &QTimer::timeout, nullptr, nullptr);
-
-    connect(&eTime,
-            &QTimer::timeout,
-            this,
-            &PrzeciwnikDolny::updatePrzeciwnik);
+    connect(&eTime, &QTimer::timeout, this, &PrzeciwnikDolny::updatePrzeciwnik);
 
     eTime.start(16);
+
+
 }
 
 void PrzeciwnikDolny::updatePrzeciwnik()
 {
-    // JEŚLI STOI
-    if(zatrzymany)
-    {
-        licznikStop++;
+    //Podstawowy ruch w lewo
+    ustawX(m_x - xPredkosc);
 
-        // 120 klatek to ok. 2 sekundy
-        if(licznikStop > 120)
-        {
-            zatrzymany = false;
-            licznikStop = 0;
-        }
-    }
-    else
-    {
-        // 2. RUCH ZYGZAKIEM:
-        // m_x / 50.0 określa jak "gęsty" jest zygzak
-        // * 8.0 określa jak "wysoko" skacze góra-dół
-        double przesuniecieY = sin(m_x / 50.0) * 150.0;
-        double bazoweY = 300;
-        ustawY(bazoweY + przesuniecieY);
+    // ruch zygzakiem
+    // m_x / 40.0 określa jak gęsty"jest zygzak
+    // * 10.0 określa jak wysoko skacze góra-dół
+    double przesuniecieY = sin(m_x / 40.0) * 10.0;
+    double bazoweY = m_y;
+    ustawY(bazoweY + przesuniecieY);
 
 
-    }
+
 
     // Jeśli ten przeciwnik akurat dostał i wybucha, zatrzymujemy go
     if (m_typ == 99)

@@ -9,6 +9,9 @@
 #include <QQmlListProperty>
 using namespace std;
 
+//Cale sterowanie można w sumie rozbić na mniejsze klasy, zamiast dużego kombajnu np. sterowanie, kolizje, spawn przeciwników - mechanika
+
+
 class Sterowanie:public QObject
 {
     Q_OBJECT
@@ -34,12 +37,13 @@ class Sterowanie:public QObject
      int m_zycie = 100; //ilość pancerza/życia
      int m_level = 1; //level - pozim gry
      bool m_gameOver=false;
+     bool m_pauza = false;
+     bool m_gameStarted = false;
      QTimer time;
      QTimer sPrzeciwnik;
      QList<Pocisk*> pociskList;
      QList<Przeciwnik*> przeciwnikList;
-
-
+    int czasSpawnu = 1500;
 
 public:
     Sterowanie(QObject* parent=nullptr);
@@ -67,6 +71,7 @@ public:
 
     //funkcje przeciwnnikow
     Q_INVOKABLE void stworzPrzeciwnika();
+    Q_INVOKABLE void ustawPauze(bool p);
 
     //funkcje punktacja
     Q_INVOKABLE QString pokazPunkty();
@@ -76,12 +81,13 @@ public:
     QQmlListProperty<Przeciwnik> pobierzPrzeciwnicy();
 
 
+
 public slots:
     void aktualizujStan();
     void usunPocisk(Pocisk* pocisk);
     void usunPrzeciwnika(Przeciwnik* przeciwnik);
     void sprawdzKolizje();
-
+    void startGame();
 
 signals:
     void xZmiana();

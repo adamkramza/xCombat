@@ -2,19 +2,19 @@
 #include <cmath>
 using namespace std;
 
-// Inicjalizacja listy parametrów
+// Inicjalizacja listy parametrów - dodałem przeciwnika na level 3 - samolot 2
 PrzeciwnikSzybki::PrzeciwnikSzybki(QObject* parent)
     : Przeciwnik(parent)
 {
-    m_typ = 1;
-    m_rozmiar=80;
+    m_typ = 3;
+    m_rozmiar=140;
     // Ustawiamy wartości początkowe specyficzne dla tego typu
-    m_x = 2000;
-    m_y = 100 + (rand() % 700);
-    xPredkosc = 6; // Wyraźnie szybciej
+    m_x = 1960;
+    m_y = 50 + (rand() % 700);
+    xPredkosc = 8;
 
 
-    // WAŻNE: Rozłączamy timer od funkcji rodzica (updatePrzeciwnik z Przeciwnik.cpp)
+    // Rozłączamy timer od funkcji rodzica (updatePrzeciwnik z Przeciwnik.cpp)
     // Dzięki temu będzie się wykonywać tylko nowa funkcja z zygzakiem
     disconnect(&eTime, &QTimer::timeout, nullptr, nullptr);
 
@@ -25,16 +25,20 @@ PrzeciwnikSzybki::PrzeciwnikSzybki(QObject* parent)
     eTime.start(16);
 }
 
+
+
+
 void PrzeciwnikSzybki::updatePrzeciwnik()
 {
-    // 1. Podstawowy ruch w lewo
+
+    // Podstawowy ruch w lewo
     ustawX(m_x - xPredkosc);
 
     // 2. RUCH ZYGZAKIEM:
     // m_x / 50.0 określa jak "gęsty" jest zygzak
     // * 8.0 określa jak "wysoko" skacze góra-dół
-    double przesuniecieY = sin(m_x / 50.0) * 8.0;
-    double bazoweY = 300;
+    double przesuniecieY = sin(m_x / 50.0) * 5.0;
+    double bazoweY = m_y;
     ustawY(bazoweY + przesuniecieY);
 
     // Jeśli ten przeciwnik akurat dostał i wybucha, zatrzymujemy go

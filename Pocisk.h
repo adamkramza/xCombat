@@ -19,7 +19,7 @@ protected:
 
 public:
 
-    Pocisk (QObject* parent=nullptr);    //konstruktor z listą inicjalizacyjną
+    Pocisk (QObject* parent=nullptr);
     double x();
     double y();
     void ustawX(double wartosc);

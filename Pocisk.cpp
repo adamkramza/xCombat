@@ -1,7 +1,7 @@
 #include "Pocisk.h"
 using namespace std;
 
-Pocisk::Pocisk(QObject* parent):  m_x(200), m_y(1080/2-50), xPredkosc(25), yPredkosc(0)
+Pocisk::Pocisk(QObject* parent):  m_x(200), m_y(1080/2-50), xPredkosc(10), yPredkosc(0)
 {
 
     connect(&bTime, &QTimer::timeout, this, &Pocisk::updatePocisk);
@@ -48,7 +48,7 @@ void Pocisk::ustawPredkosc(double p)
 
 void Pocisk::updatePocisk()
 {
-    ustawX(m_x + xPredkosc); //tu możemy zmienić kierunek lotu pocisku
+    ustawX(m_x + xPredkosc); //tu możemy zmienić kierunek lotu pocisku - nasze po x w prawo
 
 
 }

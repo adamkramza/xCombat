@@ -6,6 +6,7 @@ class PrzeciwnikSzybki : public Przeciwnik
 {
     Q_OBJECT
 
+
 public:
 
  explicit PrzeciwnikSzybki(QObject* parent = nullptr);

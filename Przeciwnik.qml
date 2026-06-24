@@ -3,7 +3,7 @@ import QtQuick
 Rectangle {
     id: przeciwnik
     width: 80
-    height: 120
+    height: 200
     color: "transparent"
 
 

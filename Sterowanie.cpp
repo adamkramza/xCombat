@@ -4,17 +4,23 @@
 #include "Przeciwnikduzy.h"
 #include "Przeciwnikdolny.h"
 #include <ctime>
+
 using namespace std;
 
-
+//Cale to można w sumie rozbić na mniejsze klasy np. sterowanie, kolizje, spawn przeciwników
 
 Sterowanie::Sterowanie(QObject* parent)
     : m_x(200), m_y(490), xPredkosc(10), minX(100), maxX(1800), minY(50), maxY(850)
 {
+
     connect(&time, &QTimer::timeout, this, &Sterowanie::aktualizujStan);
     connect(&sPrzeciwnik, &QTimer::timeout, this, &Sterowanie::stworzPrzeciwnika);
     time.start(16);
-    sPrzeciwnik.start(1000 + rand() % 2000);
+    // sPrzeciwnik.start(1000 + rand() % 2000);
+    // sPrzeciwnik.start(1000);
+    sPrzeciwnik.start(1200 + rand() % 1000);
+    m_gameStarted = false;
+    m_pauza = true;
 
 }
 
@@ -48,27 +54,32 @@ void Sterowanie::ustawY(double wartosc)
 
 void Sterowanie::wLewo()
 {
+    if(m_pauza) return;
     ustawX(m_x - xPredkosc < minX ? minX : m_x - xPredkosc);
 }
 
 void Sterowanie::wPrawo()
 {
+    if(m_pauza) return;
     ustawX(m_x + xPredkosc > maxX ? maxX : m_x + xPredkosc);
 }
 
 void Sterowanie::wGore()
 {
+    if(m_pauza) return;
     ustawY(m_y - xPredkosc < minY ? minY : m_y - xPredkosc);
 }
 
 void Sterowanie::wDol()
 {
+    if(m_pauza) return;
     ustawY(m_y + xPredkosc > maxY ? maxY : m_y + xPredkosc);
 }
 
 void Sterowanie::strzalRakieta()
 {
-
+    if(m_pauza || m_gameOver)
+        return;
     Pocisk* newPocisk = new Pocisk(this);
     newPocisk->ustawX(m_x + 50);
     newPocisk->ustawY(m_y + 20);
@@ -81,23 +92,26 @@ void Sterowanie::strzalRakieta()
 
 void Sterowanie::stworzPrzeciwnika()
 {
+    if (m_pauza || m_gameOver || !m_gameStarted) return;
     Przeciwnik* nP = nullptr;
 
-    // Przypisanie stworzu, domyślnie 1, jeśli m_level jest nieustawione
+    // Przypisałem stworzu, domyślnie 1, jeśli m_level jest nieustawione
     int aktualnyLevel = (m_level > 0) ? m_level : 1;
+
 
     //Poziom 1:
     if (aktualnyLevel == 1)
     {
-        sPrzeciwnik.start(2000);//predkosc spawny przeciwnika
+        // predkosc spawny przeciwnika
         nP = new Przeciwnik(this);
+        czasSpawnu = 1000 + rand() % 1500;
     }
 
 
-    //POziom 2:
+    //Poziom 2:
     else if (aktualnyLevel == 2)
     {
-        sPrzeciwnik.start(1000);//predkosc spawny przeciwnika
+
         if (rand() % 2 == 0)
         {
             nP = new Przeciwnik(this);
@@ -105,6 +119,8 @@ void Sterowanie::stworzPrzeciwnika()
 
             nP = new PrzeciwnikDuzy(this);
         }
+
+        czasSpawnu = 800 + rand() % 1000;
     }
     // Poziom 3
     else if(aktualnyLevel == 3)
@@ -125,13 +141,14 @@ void Sterowanie::stworzPrzeciwnika()
             nP = new PrzeciwnikSzybki(this);
             break;
         }
+        czasSpawnu = 600 + rand() % 800;
     }
 
 
     // Poziom 4
     else if(aktualnyLevel==4)
     {
-        sPrzeciwnik.start(500);
+
         int los = rand() % 4;
         switch (los)
         {
@@ -151,35 +168,37 @@ void Sterowanie::stworzPrzeciwnika()
             nP = new Przeciwnik(this);
             break;
         }
+
+         czasSpawnu = 200 + rand() % 500;
     }
 
-    // Krytyczny bezpiecznik: Jeśli wskaźnik z jakiegoś powodu jest pusty,
-    // natychmiast przerywamy funkcję, żeby nie dotykać pamięci nullptr!
+
     if (nP == nullptr)
     {
-        // sPrzeciwnik.start(1000 + rand() % 2000); // Restartujemy timer, żeby gra nie utknęła
+        // Restartujemy timer, żeby gra nie utknęła
         return;
     }
 
-    // Ustawianie właściwości obiektu
+    // właściwości obiektu
     nP->ustawPoziom(aktualnyLevel);
     nP->ustawX(2000);
-    nP->ustawY(100 + rand() % 700);
+    nP->ustawY(100 + rand() % 600);
 
     //Dodanie do listy i powiadomienie QML
     przeciwnikList.append(nP);
 
-    //Losowanie czasu do następnego spawnu (od 1.2s do 3.2s)
-    // sPrzeciwnik.start(1200 + rand() % 2000);
 
+
+    sPrzeciwnik.start(czasSpawnu);
     emit przeciwnikChanged();
+
 }
 
 void Sterowanie::aktualizujStan()
 {
+    if (m_pauza) return;
 
-
-    // 1. Usuwanie pocisków lecących poza ekran
+    //Usuwanie pocisków lecących poza ekran
     for (int i = pociskList.size() - 1; i >= 0; i--) {
         Pocisk* p = pociskList[i];
         if (p->x() > 2000 || p->x() < -100 || p->y() > 1100)
@@ -190,13 +209,13 @@ void Sterowanie::aktualizujStan()
         }
     }
 
-    // 2. Obsługa przeciwników (ucieczka poza ekran LUB odliczanie wybuchu)
+    // Obsługa przeciwników (ucieczka poza ekran LUB odliczanie wybuchu)
     for (int i = przeciwnikList.size() - 1; i >= 0; i--)
     {
         Przeciwnik* pr = przeciwnikList[i];
 
-        // Jeśli uciekł żywy za lewą krawędź - usuwanie
-        if (pr->x() < -100 && pr->pobierzTyp() != 99)
+        // Jeśli uciekł żywy za lewą krawędź - usuwamy go
+        if (pr->x() < -pr->rozmiar() && pr->pobierzTyp() != 99)
         {
             przeciwnikList.removeAt(i);
             pr->deleteLater();
@@ -241,7 +260,7 @@ void Sterowanie::usunPrzeciwnika(Przeciwnik* przeciwnik)
 
 void Sterowanie::sprawdzKolizje()
 {
-    // PĘTLA 1: POCISKI I PRZECIWNICY
+    //POCISKI I PRZECIWNICY
     for (int i = pociskList.size() - 1; i >= 0; i--)
     {
         Pocisk* pocisk = pociskList[i];
@@ -249,6 +268,10 @@ void Sterowanie::sprawdzKolizje()
         for (int j = przeciwnikList.size() - 1; j >= 0; j--)
         {
             Przeciwnik* pr = przeciwnikList[j];
+            if(pr->x() < 0 || pr->x() > 1920)
+            {
+                continue;
+            }
 
             if (pr->pobierzTyp() == 99) continue;
 
@@ -261,10 +284,10 @@ void Sterowanie::sprawdzKolizje()
                 pocisk->y() < pr->y() + wrogRozmiar &&
                 pocisk->y() + pociskWysokosc > pr->y())
             {
-                int nagroda = 10;
-                if (pr->pobierzTyp() == 1) nagroda = 50;
-                if (pr->pobierzTyp() == 2) nagroda = 100;
-                 if (pr->pobierzTyp() == 3) nagroda = 200;
+                int nagroda = 25;
+                if (pr->pobierzTyp() == 1) nagroda = 100;
+                if (pr->pobierzTyp() == 2) nagroda = 10;
+                 if (pr->pobierzTyp() == 3) nagroda = 50;
                 ustawPunkty(m_punkty + nagroda);
 
                 usunPocisk(pocisk);
@@ -276,7 +299,7 @@ void Sterowanie::sprawdzKolizje()
         }
     }
 
-    // PĘTLA 2: GRACZ I PRZECIWNICY
+    // GRACZ I PRZECIWNICY
     for (int i = przeciwnikList.size() - 1; i >= 0; i--)
     {
         Przeciwnik* pr = przeciwnikList[i];
@@ -305,6 +328,8 @@ void Sterowanie::sprawdzKolizje()
         }
     }
 
+//tu dodałem zmianę levelu w zależności od zdobytych punktów
+
   int nowyPoziom = 1;
 
     if(m_punkty >= 1000)
@@ -315,7 +340,7 @@ void Sterowanie::sprawdzKolizje()
     {
         nowyPoziom = 3;
     }
-    else if(m_punkty >= 200)
+    else if(m_punkty >= 100)
     {
         nowyPoziom = 2;
     }
@@ -331,6 +356,37 @@ void Sterowanie::sprawdzKolizje()
     }
 }
 
+void Sterowanie::startGame()
+{
+    m_gameStarted = true;
+    m_gameOver = false;
+    m_pauza = false;
+    time.start(16);
+    sPrzeciwnik.start(1200 + rand() % 1000);
+}
+
+//tu dodałem funkcję zatrzymującą grę, zatrzymuje przciwników po ESC
+void Sterowanie::ustawPauze(bool p)
+{
+    m_pauza = p;
+
+    if (m_pauza)
+    {
+        time.stop();
+        sPrzeciwnik.stop();
+    }
+    else
+    {
+        time.start(16);
+        sPrzeciwnik.start(1200 + rand() % 1000);
+    }
+
+    for (int i = 0; i < przeciwnikList.size(); i++)
+    {
+        przeciwnikList[i]->ustawPauze(p);
+    }
+}
+
 QString Sterowanie::pokazPunkty()
 {
     return QString::number(m_punkty);
@@ -341,27 +397,24 @@ void Sterowanie::resetujGre()
 {
     qDeleteAll(pociskList);
     pociskList.clear();
-    emit bulletChanged();
 
     qDeleteAll(przeciwnikList);
     przeciwnikList.clear();
-    emit przeciwnikChanged();
 
     m_punkty = 0;
-    emit zmianaPunkty();
     m_x = 200;
-    emit xZmiana();
     m_y = 490;
-    emit yZmiana();
     m_level = 1;
-    emit levelZmiana();
     m_zycie = 100;
+
+    emit zmianaPunkty();
+    emit xZmiana();
+    emit yZmiana();
+    emit levelZmiana();
     emit zycieZmiana();
     m_gameOver = false;
-    emit gameOverZmiana();
-    time.start(16);
-    sPrzeciwnik.start(1000 + rand()%2000);
-
+    m_pauza = true;
+    m_gameStarted = false;
 }
 
 

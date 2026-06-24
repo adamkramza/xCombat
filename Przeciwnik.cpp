@@ -1,16 +1,15 @@
 #include "Przeciwnik.h"
 using namespace std;
 
-// W liście inicjalizacyjnej dodajemy domyślne wartości dla zwykłego przeciwnika
-Przeciwnik::Przeciwnik(QObject* parent)
-    : QObject(parent),
-    m_x(2000),
+// W liście inicjalizacyjnej dodałem domyślne wartości dla zwykłego przeciwnika - helikoptera na 1 levelu
+Przeciwnik::Przeciwnik(QObject* parent): QObject(parent),
+    m_x(1960),
     m_y(100 + rand() % 700),
     xPredkosc(5),
     yPredkosc(0),
-    m_typ(0),           // 0 = zwykły przeciwnik
-    m_rozmiar(60),      // Domyślny rozmiar (zwykły hit-box)
-    licznikWybuchu(0)   // 0 = brak wybuchu, obiekt żyje
+    m_typ(2),
+    m_rozmiar(120),
+    licznikWybuchu(0)
 {
     connect(&eTime, &QTimer::timeout, this, &Przeciwnik::updatePrzeciwnik);
     eTime.start(16);
@@ -60,8 +59,21 @@ void Przeciwnik::ustawWybuch()
     m_typ = 99; emit typZmiana();
 }
 
+void Przeciwnik::ustawPauze(bool p)
+{
+    if(p)
+    {
+        eTime.stop();
+    }
+    else
+    {
+        eTime.start(16);
+    }
+}
+
 void Przeciwnik::updatePrzeciwnik()
 {
+
     // Jeśli przeciwnik wybucha (typ 99), zatrzymujemy jego ruch
     if (m_typ == 99)
     {

@@ -3,14 +3,15 @@ import QtQuick.Controls
 
 Window {
 
+    //DODAŁEM CZCIONKĘ - GOOGLE FONTS - TA BĘDZIE LEPIEJ PASOWAĆ
     FontLoader
     {
             id: czcionkaGry
-            source: "qrc:/gracz/Orbitron-Bold.ttf" // Upewnij się, że ścieżka qrc jest poprawna!
+            source: "qrc:/gracz/Orbitron-Bold.ttf"
     }
 
 
-    //GŁÓWNE OKNO PROGRAMU - WEDŁUG MOJEJ ROZDZIELCZOŚCI
+    //GŁÓWNE OKNO PROGRAMU - WEDŁUG MOJEJ ROZDZIELCZOŚCI LAPKA - DODAŁEM FULLSCREEN
     id: root
     width: 1920
     height: 1080
@@ -20,6 +21,7 @@ Window {
     maximumHeight: height
     visible: true
     title: qsTr("MENU") // NAZWA OKNA GŁÓWNEGO
+    visibility: Window.FullScreen
 
     //LOGIKA SYSTEMOWA
     property string activeView: "MENU"
@@ -32,6 +34,9 @@ Window {
             root.activeView = "GAMEOVER"
         }
     }
+
+
+
 //_________________________________________________________________________________
     //WIDOK 1: MENU GŁÓWNE / PAUZA
     //Ekran początkowy - po uruchomieniu gry
@@ -61,35 +66,51 @@ Window {
             spacing: 20
 
             Text {
-                text: root.gameStarted ? "PAUZA" : "MENU"
-                font.pixelSize: 100
+                text: root.gameStarted ? "PAUZA" : "DOWÓDZTWO"
+                font.pixelSize: 60
                 font.bold: true
                 font.family: czcionkaGry.name
                 font.letterSpacing: 2
-                color: root.gameStarted ? "#ff4444" : "#deff9a"
+                style: Text.Outline
+                styleColor: "#001018"
+                color: root.gameStarted ? "#ff4444" : "#aaaaaa"
                 anchors.horizontalCenter: parent.horizontalCenter
+
             }
 
             // PRZYCISK START/WZNÓW
             Button {
-                text: root.gameStarted ? "WZNÓW" : "START"
+                text: root.gameStarted ? "ODLOT" : "START MISJI"
                 width: 300
                 height: 50
+
                 font.pixelSize: 30
                 font.bold: true
                 font.family: czcionkaGry.name
                 font.letterSpacing: 2
                 anchors.horizontalCenter: parent.horizontalCenter
+
                 onClicked: {
-                    root.activeView = "GAME"
-                    root.gameStarted = true
-                    gracz1.forceActiveFocus()
+                    if (!root.gameStarted)
+                     {
+                         kontrola.resetujGre();
+                         kontrola.startGame()
+                     }
+                     else
+                     {
+                         kontrola.ustawPauze(false)
+                     }
+
+                     root.activeView = "GAME"
+                     root.gameStarted = true
+
+                     gracz1.forceActiveFocus()
                 }
             }
 
             // PRZYCISK STEROWANIE
             Button {
-                text: "STEROWANIE"
+                text: "ODPRAWA"
                 width: 300
                 height: 50
                 font.pixelSize: 30
@@ -119,6 +140,7 @@ Window {
 
                 onClicked: {
                     kontrola.resetujGre()    // funkcja resetująca grę
+                      kontrola.ustawPauze(true)
                     root.gameStarted = false // Przełączenie flagi menu w QML
                     root.activeView = "MENU"  // Powrót do menu głównego
                 }
@@ -175,7 +197,7 @@ Window {
             NumberAnimation on offset {
                 from: 0
                 to: -root.width // Przesuwamy o pełną szerokość ekranu (1920)
-                duration: 50000 // Czas trwania pełnego cyklu przesuwania tła
+                duration: 30000 // Czas trwania pełnego cyklu przesuwania tła
                 loops: Animation.Infinite
                 running: root.activeView === "GAME" // Tło przewija się tylko podczas gry
             }
@@ -186,7 +208,7 @@ Window {
                 width: parent.width
                 height: parent.height
                 x: scrollingBackground.offset // Pozycja zależy od animacji
-                source: "qrc:/gracz/1.Pustynia.png"
+                source: "qrc:/gracz/Gra1.png"
                 fillMode: Image.Stretch
             }
 
@@ -196,7 +218,7 @@ Window {
                 width: parent.width
                 height: parent.height
                 x: scrollingBackground.offset + parent.width // Zawsze dokładnie 1920 pikseli w prawo od pierwszej
-                source: "qrc:/gracz/1.Pustynia.png"
+                source: "qrc:/gracz/Gra1.png"
                 fillMode: Image.Stretch
             }
         }
@@ -227,6 +249,8 @@ Window {
             Keys.onPressed: (event) => {
                 if (event.key === Qt.Key_Escape) {
                     root.activeView = "MENU"
+                    kontrola.ustawPauze(true)
+                    event.accepted = true;
                     return;
                 }
                 if (event.key === Qt.Key_Space && !event.isAutoRepeat) {
@@ -284,16 +308,17 @@ Window {
             delegate: Rectangle {
                 id: kontenerPrzeciwnika
 
-                //Bazowa szerokość w zależności od typu
-                property real bazowaSzerokosc: modelData.typ === 1 ? 140 : // Duży
-                                              modelData.typ === 2 ? 80  : // Szybki
-                                              modelData.typ === 3 ? 120 : // Dolny
-                                                                    100   // Zwykły (typ 0)
+               // Bazowa szerokość w zależności od typu
+                property real bazowaSzerokosc: modelData.typ === 1 ? 140 : // UFO
+                                              modelData.typ === 2 ? 120  : // HELIKOPTER
+                                              modelData.typ === 3 ? 120 : // SAMOLOT 2
+                                              modelData.typ === 0 ? 100 : //SAMOLOT 1
+                                                                  100//
 
                 // JEŚLI WYBUCH (typ 99), MNOŻYMY ROZMIAR RAZY 2.0, W PRZECIWNYM RAZIE ZOSTAJE BAZOWY
                 //zwiększamy rozmiar grafiki wybuchu
                 width: modelData.typ === 99 ? kontenerPrzeciwnika.bazowaSzerokosc * 2.0 : kontenerPrzeciwnika.bazowaSzerokosc
-                height: width * 0.8
+                height: width * 0.7
                 color: "transparent"
 
                 x: modelData.x
@@ -316,7 +341,7 @@ Window {
                         if (modelData.typ === 99) return "qrc:/gracz/wybuch.png"
                         if (modelData.typ === 1) return "qrc:/gracz/UFO1.png"
                         if (modelData.typ === 2) return "qrc:/gracz/Przeciwnikhelikopter1.png"
-                        if (modelData.typ === 3) return "qrc:/gracz/UFO2.png"
+                        if (modelData.typ === 3) return "qrc:/gracz/dolny.png"
                         return "qrc:/gracz/Przeciwniksamolot1.png"
                     }
                 }
@@ -418,6 +443,7 @@ Window {
                     text: kontrola.zycie<= 25? "!" : kontrola.zycie + "%"
                     color: kontrola.zycie <=25 ? "white": "black"
                     font.pixelSize: 20
+                    font.letterSpacing: 2
                     font.family: czcionkaGry.name
                     font.bold: true
                 }
@@ -480,7 +506,7 @@ Window {
         Image {
             id: widok_sterowanie_tlo
             anchors.fill: parent
-            source: "qrc:/gracz/GameOverxCombat.png"
+            source: "qrc:/gracz/Sterowanie.png"
             fillMode: Image.PreserveAspectCrop
             asynchronous: true
         }
@@ -489,14 +515,7 @@ Window {
             anchors.centerIn: parent
             spacing: 40
 
-            Text {
-                text: "STEROWANIE"
-                font.pixelSize: 80
-                font.family: czcionkaGry.name
-                font.bold: true
-                color: "#deff9a"
-                anchors.horizontalCenter: parent.horizontalCenter
-            }
+
 
             Button {
                 text: "POWRÓT"
@@ -507,6 +526,7 @@ Window {
                 font.bold: true
                 anchors.horizontalCenter: parent.horizontalCenter
                 onClicked: {
+                     kontrola.ustawPauze(true)
                     root.activeView = "MENU"
                 }
             }
@@ -578,6 +598,7 @@ Window {
                                     historia.zapiszWynik(poleImie.text, Math.floor(kontrola.punkty));
                                     poleImie.text = "";
                                     kontrola.resetujGre()
+                                      kontrola.ustawPauze(true)
                                     root.gameStarted = false
                                     root.activeView = "WYNIKI";
                                 }
@@ -627,9 +648,9 @@ Window {
     }
 
     //ZMIANA LEVELU GRY
-    // Tekst wyskakujący na środku ekranu gry
+    //Tekst wyskakujący na środku ekranu gry
     Text {
-        id: level_Tekst
+        id: levelText
         anchors.centerIn: parent
         text: "POZIOM: " + kontrola.level
         font.pixelSize: 80
@@ -677,23 +698,32 @@ Window {
         color: "#1a1a1a"
         z: 999
 
+        Image {
+            id: widok_wyniki_tlo
+            anchors.fill: parent
+            source: "qrc:/gracz/Wyniki.png"
+            fillMode: Image.PreserveAspectCrop
+            asynchronous: true
+        }
         Column {
-            anchors.centerIn: parent
-            spacing: 30
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: parent.top
+            anchors.topMargin: 80
+            spacing: 20
 
             Text {
-                text: "NAJLEPSZE WYNIKI"
-                font.pixelSize: 80
+                text: "WŁADCY PRZESTWORZY"
+                font.pixelSize: 50
                 font.family: czcionkaGry.name
                 font.bold: true
-                color: "#deff9a"
+                color: "#aaaaaa"
                 anchors.horizontalCenter: parent.horizontalCenter
             }
 
             // Tabela pobierająca dane wyników
             ListView {
                 width: 450
-                height: 300
+                height: 500
                 clip: true
                 spacing: 10
 
@@ -724,8 +754,6 @@ Window {
             }
         }
     }
-
-
 
 
 

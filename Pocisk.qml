@@ -13,7 +13,7 @@ Rectangle {
 
     Image {
             id: grafikaPocisku
-            source: "qrc:/gracz/Rakieta.png" // Ścieżka do Twojego pliku PNG
+            source: "qrc:/gracz/Rakieta.png"
             anchors.fill: parent
             fillMode: Image.PreserveAspectFit
         }

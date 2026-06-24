@@ -1,56 +1,93 @@
 #include "HistoriaWynikow.h"
+#include <QSettings>
 #include <algorithm>
+
 using namespace std;
 
-HistoriaWynikow::HistoriaWynikow(QObject *parent) : QObject(parent) {}
+HistoriaWynikow::HistoriaWynikow(QObject *parent)
+    : QObject(parent){}
+
 
 void HistoriaWynikow::zapiszWynik(QString imie, int punkty)
 {
-    QSettings settings("xCombat");
-    settings.beginGroup("Wyniki");
-    settings.setValue(imie, punkty);
-    settings.endGroup();
-}
-
-
-
-
-//FUNKCJA POBIERAJĄCA ORAZ SORTUJĄCA WYNIKI W TABLELI
-QStringList HistoriaWynikow::pobierzWyniki()
-{
-    QSettings settings("xCombat");
-    settings.beginGroup("Wyniki");
-
-    const QStringList klucze = settings.childKeys(); // Pobieramy wszystkie zapisane imiona graczy
-
-    // Tworzymy prostą strukturę lokalną, aby powiązać imię z punktami
-    struct WpisWyniku {
+    struct Wynik {
         QString imie;
         int punkty;
     };
 
-    QList<WpisWyniku> listaTymczasowa;
+    QList<Wynik> lista;
 
-    // Zczytujemy wszystkie dane z QSettings do naszej listy strukturalnej
-    for (const QString &klucz : klucze) {
-        int pkt = settings.value(klucz).toInt();
-        WpisWyniku wpis;
-        wpis.imie = klucz;
-        wpis.punkty = pkt;
-        listaTymczasowa.append(wpis);
+    QSettings settings("xCombat");
+
+    //odczyt
+    settings.beginGroup("Wyniki");
+
+    int ile = settings.value("ile", 0).toInt();
+
+    for (int i = 0; i < ile; i++)
+    {
+        settings.beginGroup(QString::number(i));
+
+        Wynik w;
+        w.imie = settings.value("imie").toString();
+        w.punkty = settings.value("punkty").toInt();
+
+        lista.append(w);
+
+        settings.endGroup();
     }
+
     settings.endGroup();
 
-    //Sortujemy listę tymczasową od największego do najmniejszego wyniku
-    sort(listaTymczasowa.begin(), listaTymczasowa.end(), [](const WpisWyniku& a, const WpisWyniku& b) {
-        return a.punkty > b.punkty;
-    });
+    //dodaj nowy wynik - imie i pinkty
+    lista.append({imie, punkty});
 
-    // Przepisujemy posortowane dane do QStringList dla QML
-    QStringList listaDoQML;
-    for (const WpisWyniku &wpis : listaTymczasowa) {
-        listaDoQML.append(wpis.imie + " - " + QString::number(wpis.punkty) + " pkt");
+    // funkcja sortująca listę
+    sort(lista.begin(), lista.end(),
+         [](const Wynik &a, const Wynik &b)
+         {
+             return a.punkty > b.punkty;
+         });
+
+
+    if (lista.size() > 10)
+        lista = lista.mid(0, 10);
+
+
+    settings.beginGroup("Wyniki");
+    settings.remove(""); // czyści stare dane
+    settings.setValue("ile", lista.size());
+
+    for (int i = 0; i < lista.size(); i++)
+    {
+        settings.beginGroup(QString::number(i));
+        settings.setValue("imie", lista[i].imie);
+        settings.setValue("punkty", lista[i].punkty);
+        settings.endGroup();
     }
+    settings.endGroup();
+}
 
-    return listaDoQML;
+
+QStringList HistoriaWynikow::pobierzWyniki()
+{
+    QStringList wynik;
+    QSettings settings("xCombat");
+
+    settings.beginGroup("Wyniki");
+
+    int ile = settings.value("ile", 0).toInt();
+    for (int i = 0; i < ile; i++)
+    {
+        settings.beginGroup(QString::number(i));
+
+        QString imie = settings.value("imie").toString();
+        int punkty = settings.value("punkty").toInt();
+
+        wynik.append(imie + " - " + QString::number(punkty) + " pkt");
+
+        settings.endGroup();
+    }
+    settings.endGroup();
+    return wynik;
 }

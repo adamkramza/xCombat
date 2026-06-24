@@ -19,9 +19,8 @@ protected:
     double yPredkosc;
     double xPredkosc;
     QTimer eTime;
-
-    int m_typ;          // 0 - zwykły, 1 - szybki, 2 - duży, 3 - dolny, 99 - WYBUCH
-    int m_rozmiar;      // tutaj trzymamy rozmiar przeciwnika (W pikselach, np. 60, 120, 140)
+    int m_typ;          // 0 - zwykły - samolot1, 1 - szybki - UFO, 2 - duży- HELIKOPTER, 3 - dolny - samolot2, 99 - WYBUCH
+    int m_rozmiar;      // tutaj trzymam rozmiar przeciwnika (W pikselach, np. 60, 120, 140)
 
 public:
     int licznikWybuchu; // Licznik do odliczania czasu trwania wybuchu
@@ -29,12 +28,13 @@ public:
     virtual ~Przeciwnik() {};
     double x();
     double y();
-    int rozmiar(); // Zwykły getter, bez "virtual"
+    int rozmiar(); // Zwykły getter
     int pobierzTyp();
     void ustawPoziom(int level);
     void ustawX(double wartosc);
     void ustawY(double wartosc);
     void ustawWybuch();
+    void ustawPauze(bool p);
 
 public slots:
     void updatePrzeciwnik();

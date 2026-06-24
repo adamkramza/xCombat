@@ -52,6 +52,7 @@ qt_add_qml_module(appxCombat
    QML_FILES
 
    SOURCES Przeciwnikdolny.h Przeciwnikdolny.cpp
+   SOURCES HistoriaWynikow.h HistoriaWynikow.cpp
 
 )
 
