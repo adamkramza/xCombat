@@ -5,6 +5,7 @@ Projekt zaliczeniowy z programowania
 ## Opis
 
 Gra 2D typu shooter wykonana w C++ oraz Qt/QML.
+Sterujemy samolotem, strzelamy do przeciwników.
 
 ## Sterowanie
 
@@ -18,8 +19,11 @@ ESC - pauza
 
 ## Funkcje
 
-- 3 poziomy trudności
-- system punktów
-- pasek życia
+- 4 poziomy trudności
+- 4 rodzaje przeciwnkików
 - przeciwnicy różnych typów
-- ekran Game Over
+- system punktów
+- lista najlepszych wyników
+- pasek życia
+
+  
