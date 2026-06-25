@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
         Qt::QueuedConnection);
     engine.load(url);
 
-    srand(time(nullptr));
+
 
     return QCoreApplication::exec();
 }

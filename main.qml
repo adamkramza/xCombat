@@ -224,7 +224,7 @@ Window {
         }
 
         // 1. GRACZ
-        //Konstrolowany samolot
+        //Kontrolowany samolot
         Rectangle  {
             id: gracz1
             width: 200;

@@ -35,8 +35,8 @@ class Sterowanie:public QObject
      double maxY;
      double m_punkty=0; //ilość punktów
      int m_zycie = 100; //ilość pancerza/życia
-     int m_level = 1; //level - pozim gry
-     bool m_gameOver=false;
+     int m_level = 1; //level - poziom gry
+     bool m_gameOver = false;
      bool m_pauza = false;
      bool m_gameStarted = false;
      QTimer time;
