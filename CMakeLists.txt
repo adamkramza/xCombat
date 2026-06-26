@@ -22,38 +22,30 @@ qt_add_executable(appxCombat
 
 
 qt_add_qml_module(appxCombat
+    URI xCombat
+    VERSION 1.0
 
-   URI xCombat
+    QML_FILES
+        main.qml
+        Pocisk.qml
+        Przeciwnik.qml
+        KoniecGryWidok.qml
+        MenuWidok.qml
+        SterowanieWidok.qml
+        WynikiWidok.qml
 
-   VERSION 1.0
+    SOURCES
+        Sterowanie.h Sterowanie.cpp
+        Pocisk.h Pocisk.cpp
+        Przeciwnik.h Przeciwnik.cpp
+        Przeciwnikszybki.h Przeciwnikszybki.cpp
+        Przeciwnikduzy.h Przeciwnikduzy.cpp
+        Przeciwnikdolny.h Przeciwnikdolny.cpp
+        HistoriaWynikow.h HistoriaWynikow.cpp
 
-   QML_FILES main.qml
-
-   SOURCES Sterowanie.h Sterowanie.cpp
-
-   QML_FILES Pocisk.qml
-
-   SOURCES Pocisk.h Pocisk.cpp
-
-   SOURCES
-
-   SOURCES Przeciwnik.h Przeciwnik.cpp
-
-   QML_FILES Przeciwnik.qml
-
-   SOURCES Przeciwnikszybki.h Przeciwnikszybki.cpp
-
-   SOURCES Przeciwnikduzy.h Przeciwnikduzy.cpp
-
-   RESOURCES JET.png
-
-   RESOURCES images/images.qrc
-
-   QML_FILES
-
-   SOURCES Przeciwnikdolny.h Przeciwnikdolny.cpp
-   SOURCES HistoriaWynikow.h HistoriaWynikow.cpp
-
+    RESOURCES
+        JET.png
+        images/images.qrc
 )
 
 
