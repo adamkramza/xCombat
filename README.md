@@ -13,8 +13,6 @@ Sterujemy samolotem, strzelamy do przeciwników.
 
 SPACJA - strzał
 
-SHIFT - bomba
-
 ESC - pauza
 
 ## Funkcje
