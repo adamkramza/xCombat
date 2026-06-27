@@ -1,8 +1,8 @@
 #include "Sterowanie.h"
-#include "Przeciwnik.h"
-#include "Przeciwnikszybki.h"
-#include "Przeciwnikduzy.h"
-#include "Przeciwnikdolny.h"
+#include "PrzeciwnikHelikopter.h"
+#include "PrzeciwnikSzybki.h"
+#include "PrzeciwnikSamolotZygzak.h"
+#include "PrzeciwnikUFO.h"
 #include <ctime>
 
 using namespace std;
@@ -103,7 +103,7 @@ void Sterowanie::stworzPrzeciwnika()
     if (aktualnyLevel == 1)
     {
         // predkosc spawny przeciwnika
-        nP = new Przeciwnik(this);
+        nP = new PrzeciwnikHelikopter(this);
         czasSpawnu = 1000 + rand() % 1500;
     }
 
@@ -114,10 +114,10 @@ void Sterowanie::stworzPrzeciwnika()
 
         if (rand() % 2 == 0)
         {
-            nP = new Przeciwnik(this);
+            nP = new PrzeciwnikHelikopter(this);
         } else {
 
-            nP = new PrzeciwnikDuzy(this);
+            nP = new PrzeciwnikSzybki(this);
         }
 
         czasSpawnu = 800 + rand() % 1000;
@@ -130,15 +130,15 @@ void Sterowanie::stworzPrzeciwnika()
         switch(los)
         {
         case 0:
-            nP = new Przeciwnik(this);
+            nP = new PrzeciwnikHelikopter(this);
             break;
 
         case 1:
-            nP = new PrzeciwnikDuzy(this);
+            nP = new PrzeciwnikSzybki(this);
             break;
 
         case 2:
-            nP = new PrzeciwnikSzybki(this);
+            nP = new PrzeciwnikSamolotZygzak(this);
             break;
         }
         czasSpawnu = 600 + rand() % 800;
@@ -153,19 +153,19 @@ void Sterowanie::stworzPrzeciwnika()
         switch (los)
         {
         case 0:
-            nP = new Przeciwnik(this);
+            nP = new PrzeciwnikHelikopter(this);
             break;
         case 1:
-            nP = new PrzeciwnikSzybki(this);
+            nP = new PrzeciwnikSamolotZygzak(this);
             break;
         case 2:
-            nP = new PrzeciwnikDuzy(this);
+            nP = new PrzeciwnikSzybki(this);
             break;
         case 3:
-            nP = new PrzeciwnikDolny(this);
+            nP = new PrzeciwnikUFO(this);
             break;
         default:
-            nP = new Przeciwnik(this);
+            nP = new PrzeciwnikHelikopter(this);
             break;
         }
 

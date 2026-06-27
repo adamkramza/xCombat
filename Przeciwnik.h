@@ -37,7 +37,7 @@ public:
     void ustawPauze(bool p);
 
 public slots:
-    void updatePrzeciwnik();
+    virtual void updatePrzeciwnik() = 0;
 
 signals:
     void xZmiana();

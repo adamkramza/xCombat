@@ -5,15 +5,9 @@
 class PrzeciwnikSzybki : public Przeciwnik
 {
     Q_OBJECT
-
-
 public:
-
- explicit PrzeciwnikSzybki(QObject* parent = nullptr);
-
-
+    explicit PrzeciwnikSzybki(QObject* parent = nullptr);
 public slots:
-    void updatePrzeciwnik();
+    void updatePrzeciwnik() override;
 };
-
 #endif

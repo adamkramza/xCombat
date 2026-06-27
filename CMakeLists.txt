@@ -38,14 +38,16 @@ qt_add_qml_module(appxCombat
         Sterowanie.h Sterowanie.cpp
         Pocisk.h Pocisk.cpp
         Przeciwnik.h Przeciwnik.cpp
-        Przeciwnikszybki.h Przeciwnikszybki.cpp
-        Przeciwnikduzy.h Przeciwnikduzy.cpp
-        Przeciwnikdolny.h Przeciwnikdolny.cpp
+        PrzeciwnikSamolotZygzak.h PrzeciwnikSamolotZygzak.cpp
+        PrzeciwnikSzybki.h PrzeciwnikSzybki.cpp
+        PrzeciwnikUFO.h PrzeciwnikUFO.cpp
         HistoriaWynikow.h HistoriaWynikow.cpp
 
     RESOURCES
         JET.png
         images/images.qrc
+        SOURCES PrzeciwnikHelikopter.h
+        SOURCES PrzeciwnikHelikopter.cpp
 )
 
 
